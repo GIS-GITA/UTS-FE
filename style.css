@@ -1,10 +1,7 @@
-/* --- Variabel Warna dan Font --- */
 :root {
-    /* --- PERUBAHAN WARNA TOMBOL DI SINI --- */
-    --primary: #2e7d32;       /* Hijau tua (Forest Green) agar kontras dengan form */
-    --primary-hover: #1b5e20; /* Hijau yang lebih gelap saat mouse diarahkan (hover) */
+    --primary: #2e7d32;       
+    --primary-hover: #1b5e20; 
 
-    /* --- Kode warna lainnya tetap sama --- */
     --bg-page: #F3F4F6;      
     --bg-card: #FFFFFF;      
     --bg-form-soft-green: #e8f5e9; 
@@ -27,15 +24,12 @@ body {
     box-sizing: border-box;
 }
 
-/* --- HEADER BARU --- */
 .main-header {
-    /* UBAH BACKGROUND: Menjadi soft hijau (sama dengan form & tabel) */
     background-color: var(--bg-form-soft-green); 
     padding: 20px 0;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     margin-bottom: 20px;
-    /* Tambahkan garis batas bawah hijau tipis agar rapi */
     border-bottom: 1px solid #c8e6c9; 
 }
 
@@ -54,30 +48,26 @@ body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
     font-size: 1.8rem;
-    /* UBAH WARNA TEKS: Menjadi Hijau Tua (Forest Green) agar serasi dengan tombol & form */
     color: #2e7d32; 
-    font-weight: 700; /* Sedikit lebih tebal agar tegas */
+    font-weight: 700; 
 }
 
-/* --- Container Utama --- */
 .app-container {
-    max-width: 98%; /* Hampir full screen agar peta lega */
-    margin: 0 auto 20px auto; /* Margin atas 0 karena sudah ada header */
+    max-width: 98%; 
+    margin: 0 auto 20px auto;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* --- Bagian Atas: Peta & Form --- */
 .top-section {
     display: flex;
     gap: 20px;
-    height: 75vh; /* Tinggi fix agar terlihat seperti dashboard */
+    height: 75vh; 
 }
 
-/* 1. Peta (KIRI - Besar) */
 #map-container {
-    flex: 3; /* Mengambil porsi 3 bagian (75%) */
+    flex: 3; 
     background: var(--bg-card);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -91,37 +81,33 @@ body {
     height: 100%;
 }
 
-/* 2. Sidebar Form (KANAN - Kecil) */
 .sidebar-form {
-    flex: 1; /* Mengambil porsi 1 bagian (25%) */
+    flex: 1; 
     min-width: 300px;
     display: flex;
     flex-direction: column;
 }
 
-/* --- PERUBAHAN WARNA FORM DI SINI --- */
 .form-card {
-    /* Mengubah background menjadi warna soft hijau yang telah didefinisikan di :root */
     background: var(--bg-form-soft-green); 
     padding: 25px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    height: 100%; /* Mengisi tinggi sidebar */
+    height: 100%; 
     box-sizing: border-box;
-    overflow-y: auto; /* Scroll jika layar pendek */
-    border: 1px solid #c8e6c9; /* Border hijau yang sedikit lebih tua agar serasi */
+    overflow-y: auto; 
+    border: 1px solid #c8e6c9; 
 }
 
 .form-header h2 {
     margin-top: 0;
     font-size: 1.25rem;
-    color: #2e7d32; /* Mengubah warna judul form menjadi hijau tua agar kontras */
-    border-bottom: 2px solid #a5d6a7; /* Border bawah hijau */
+    color: #2e7d32; 
+    border-bottom: 2px solid #a5d6a7; 
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
-/* --- Form Styling --- */
 .form-group {
     margin-bottom: 15px;
 }
@@ -131,15 +117,15 @@ body {
     margin-bottom: 5px;
     font-size: 0.85rem;
     font-weight: 500;
-    color: #388e3c; /* Label warna hijau yang lebih gelap */
+    color: #388e3c; 
 }
 
 .form-group input, 
 .form-group textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #a5d6a7; /* Border input hijau soft */
-    background-color: #f1f8e9; /* Background input sedikit lebih terang dari card */
+    border: 1px solid #a5d6a7; 
+    background-color: #f1f8e9; 
     border-radius: 8px;
     font-family: inherit;
     font-size: 0.9rem;
@@ -150,8 +136,8 @@ body {
 .form-group input:focus, 
 .form-group textarea:focus {
     outline: none;
-    border-color: #43a047; /* Warna fokus hijau yang lebih cerah */
-    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2); /* Shadow fokus hijau */
+    border-color: #43a047;
+    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2); 
 }
 
 .form-group textarea {
@@ -168,7 +154,6 @@ body {
     flex: 1;
 }
 
-/* --- Buttons --- */
 .form-actions {
     display: flex;
     flex-direction: column;
@@ -204,7 +189,6 @@ body {
     background-color: #6B7280;
 }
 
-/* Tombol Kecil di Popup/Tabel */
 .btn-sm {
     padding: 6px 12px;
     font-size: 0.8rem;
@@ -214,25 +198,21 @@ body {
     cursor: pointer;
     margin-right: 5px;
 }
-.edit-btn { background-color: #F59E0B; } /* Kuning/Oranye */
+.edit-btn { background-color: #F59E0B; } 
 .edit-btn:hover { background-color: #D97706; }
 .delete-btn { background-color: var(--danger); }
 .delete-btn:hover { background-color: var(--danger-hover); }
 
-/* --- Bagian Bawah: Tabel --- */
 .table-card {
-    /* UBAH BACKGROUND: Gunakan variabel soft green yang sama dengan form */
     background: var(--bg-form-soft-green); 
     padding: 25px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    /* Tambahkan border hijau tipis agar konsisten dengan form */
     border: 1px solid #c8e6c9; 
 }
 
 .table-card h3 {
     margin-top: 0;
-    /* Ubah warna judul tabel menjadi hijau tua agar estetik */
     color: #2e7d32; 
     font-size: 1.1rem;
 }
@@ -250,26 +230,20 @@ table {
 table th, table td {
     padding: 12px 15px;
     text-align: left;
-    /* Ubah garis pembatas antar baris menjadi hijau tipis */
     border-bottom: 1px solid #a5d6a7; 
     font-size: 0.9rem;
 }
 
 table th {
-    /* Header tabel diberi warna hijau yang sedikit lebih gelap dari background */
     background-color: #c8e6c9; 
     font-weight: 600;
-    color: #1b5e20; /* Teks header hijau tua */
+    color: #1b5e20; 
 }
 
-/* Efek saat kursor diarahkan ke baris tabel */
 table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.6); /* Highlight putih transparan */
+    background-color: rgba(255, 255, 255, 0.6); 
 }
 
-/* --- Tombol Edit & Hapus (TIDAK BERUBAH) --- */
-/* Kode styling tombol .edit-btn dan .delete-btn biarkan seperti sebelumnya */
-/* --- Footer --- */
 footer {
     text-align: center;
     color: var(--text-muted);
@@ -277,10 +251,9 @@ footer {
     padding-bottom: 20px;
 }
 
-/* --- Responsif (HP) --- */
 @media (max-width: 768px) {
     .top-section {
-        flex-direction: column; /* Tumpuk ke bawah di HP */
+        flex-direction: column; 
         height: auto;
     }
     

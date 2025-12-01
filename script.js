@@ -1,10 +1,5 @@
-// -----------------------------------------------------------
-// 1. PERBAIKAN URL (PENTING!)
-// Pastikan tidak ada slash '/' di akhir agar mudah disambung stringnya
-// -----------------------------------------------------------
 const API_URL = 'https://uts-be.vercel.app/locations';
 
-// --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
 const formTitle = document.getElementById('formTitle');
 const submitBtn = document.getElementById('submitBtn');
@@ -15,11 +10,8 @@ const lonInput = document.getElementById('locLon');
 const latInput = document.getElementById('locLat');
 const tableBody = document.getElementById('locationTableBody');
 
-// --- STATE ---
 let currentEditId = null;
 
-// --- MAP INITIALIZATION ---
-// Koordinat default Bandung
 const map = L.map('map').setView([-6.9175, 107.6191], 13); 
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,9 +21,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let geoJsonLayer = L.geoJSON().addTo(map);
 
-// --- FUNCTIONS ---
-
-// 1. Fetch Data
 const fetchLocations = async () => {
     try {
         const response = await fetch(API_URL); // Request ke /locations
@@ -42,10 +31,8 @@ const fetchLocations = async () => {
         
         const featureCollection = await response.json();
         
-        // A. Reset Layer Peta
         geoJsonLayer.clearLayers();
         
-        // Cek apakah ada fitur untuk ditampilkan
         if (featureCollection.features && featureCollection.features.length > 0) {
             geoJsonLayer.addData(featureCollection, {
                 onEachFeature: (feature, layer) => {
@@ -68,7 +55,6 @@ const fetchLocations = async () => {
             });
         }
 
-        // B. Reset Tabel
         tableBody.innerHTML = ''; 
         if (featureCollection.features) {
             featureCollection.features.forEach(feature => {
@@ -100,7 +86,6 @@ const fetchLocations = async () => {
     }
 };
 
-// 2. Reset Form
 const resetForm = () => {
     currentEditId = null;
     form.reset();
@@ -109,7 +94,6 @@ const resetForm = () => {
     cancelBtn.style.display = 'none';
 };
 
-// 3. Handle Submit
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -129,7 +113,6 @@ form.addEventListener('submit', async (e) => {
         geometry: { type: 'Point', coordinates: [parseFloat(lonInput.value), parseFloat(latInput.value)] }
     };
 
-    // Tentukan Method dan URL
     const method = currentEditId ? 'PUT' : 'POST';
     // Jika Edit, URL ditambah ID: .../locations/{id}
     const url = currentEditId ? `${API_URL}/${currentEditId}` : API_URL;
@@ -151,10 +134,10 @@ form.addEventListener('submit', async (e) => {
             });
 
             resetForm();
-            fetchLocations(); // Refresh data
+            fetchLocations(); 
         } else {
             const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Gagal menyimpan'); // Backend error message biasanya field 'error'
+            throw new Error(errorData.error || 'Gagal menyimpan'); 
         }
     } catch (error) {
         console.error('Error:', error);
@@ -166,16 +149,12 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
-// 4. Handle Klik Peta
 map.on('click', (e) => {
     latInput.value = e.latlng.lat.toFixed(6);
     lonInput.value = e.latlng.lng.toFixed(6);
 });
 
 cancelBtn.addEventListener('click', resetForm);
-
-// --- GLOBAL FUNCTIONS (WINDOW) ---
-// Wajib pakai window. agar bisa dipanggil dari string HTML (innerHTML)
 
 window.startEditMode = (id, name, description, lat, lon) => {
     currentEditId = id;
@@ -184,12 +163,10 @@ window.startEditMode = (id, name, description, lat, lon) => {
     latInput.value = lat;
     lonInput.value = lon;
     
-    // UI Update
     formTitle.textContent = 'Edit Lokasi';
     submitBtn.textContent = 'Update Perubahan';
     cancelBtn.style.display = 'inline-block';
     
-    // Scroll ke form agar user sadar
     form.scrollIntoView({ behavior: 'smooth' });
     nameInput.focus();
 };
@@ -208,7 +185,6 @@ window.deleteLocation = async (id) => {
 
     if (result.isConfirmed) {
         try {
-            // URL Delete: .../locations/{id}
             const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
             
             if (res.ok) {
@@ -234,5 +210,4 @@ window.deleteLocation = async (id) => {
     }
 };
 
-// Initial Load
 fetchLocations();
