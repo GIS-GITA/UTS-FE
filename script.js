@@ -1,4 +1,8 @@
-const API_URL = 'https://uts-be.vercel.app/';
+// -----------------------------------------------------------
+// 1. PERBAIKAN URL (PENTING!)
+// Pastikan tidak ada slash '/' di akhir agar mudah disambung stringnya
+// -----------------------------------------------------------
+const API_URL = 'https://uts-be.vercel.app/locations'; 
 
 // --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
@@ -15,6 +19,7 @@ const tableBody = document.getElementById('locationTableBody');
 let currentEditId = null;
 
 // --- MAP INITIALIZATION ---
+// Koordinat default Bandung
 const map = L.map('map').setView([-6.9175, 107.6191], 13); 
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,33 +34,39 @@ let geoJsonLayer = L.geoJSON().addTo(map);
 // 1. Fetch Data
 const fetchLocations = async () => {
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL); // Request ke /locations
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const featureCollection = await response.json();
         
         // A. Reset Layer Peta
         geoJsonLayer.clearLayers();
-        geoJsonLayer.addData(featureCollection, {
-            onEachFeature: (feature, layer) => {
-                const props = feature.properties;
-                const id = feature.id;
-                const coords = feature.geometry.coordinates;
-                
-                const popupContent = `
-                    <div style="min-width: 200px;">
-                        <h3 style="margin: 0 0 5px 0; color: #2563EB; font-size: 16px;">${props.name}</h3>
-                        <p style="margin: 0 0 10px 0; color: #4B5563; font-size: 14px;">${props.description}</p>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn-sm edit-btn" onclick="startEditMode('${id}', '${props.name}', '${props.description}', ${coords[1]}, ${coords[0]})">Edit</button>
-                            <button class="btn-sm delete-btn" onclick="deleteLocation('${id}')">Hapus</button>
+        
+        // Cek apakah ada fitur untuk ditampilkan
+        if (featureCollection.features && featureCollection.features.length > 0) {
+            geoJsonLayer.addData(featureCollection, {
+                onEachFeature: (feature, layer) => {
+                    const props = feature.properties;
+                    const id = feature.id; // ID ada di root object GeoJSON
+                    const coords = feature.geometry.coordinates;
+                    
+                    const popupContent = `
+                        <div style="min-width: 200px;">
+                            <h3 style="margin: 0 0 5px 0; color: #2563EB; font-size: 16px;">${props.name}</h3>
+                            <p style="margin: 0 0 10px 0; color: #4B5563; font-size: 14px;">${props.description}</p>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn-sm edit-btn" onclick="startEditMode('${id}', '${props.name}', '${props.description}', ${coords[1]}, ${coords[0]})">Edit</button>
+                                <button class="btn-sm delete-btn" onclick="deleteLocation('${id}')">Hapus</button>
+                            </div>
                         </div>
-                    </div>
-                `;
-                layer.bindPopup(popupContent);
-            }
-        });
+                    `;
+                    layer.bindPopup(popupContent);
+                }
+            });
+        }
 
         // B. Reset Tabel
         tableBody.innerHTML = ''; 
@@ -81,11 +92,10 @@ const fetchLocations = async () => {
 
     } catch (error) {
         console.error('Error fetching locations:', error);
-        // SweetAlert Error
         Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: 'Gagal mengambil data dari server! Pastikan backend berjalan di http://localhost:8080',
+            title: 'Koneksi Gagal',
+            text: 'Gagal mengambil data. Pastikan Backend sudah dideploy dan URL benar.',
         });
     }
 };
@@ -103,7 +113,6 @@ const resetForm = () => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Validasi Input Koordinat dengan SweetAlert
     if(!latInput.value || !lonInput.value) {
         Swal.fire({
             icon: 'info',
@@ -120,7 +129,9 @@ form.addEventListener('submit', async (e) => {
         geometry: { type: 'Point', coordinates: [parseFloat(lonInput.value), parseFloat(latInput.value)] }
     };
 
+    // Tentukan Method dan URL
     const method = currentEditId ? 'PUT' : 'POST';
+    // Jika Edit, URL ditambah ID: .../locations/{id}
     const url = currentEditId ? `${API_URL}/${currentEditId}` : API_URL;
 
     try {
@@ -131,7 +142,6 @@ form.addEventListener('submit', async (e) => {
         });
 
         if (res.ok) {
-            // SweetAlert Sukses (Timer otomatis hilang)
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
@@ -141,10 +151,10 @@ form.addEventListener('submit', async (e) => {
             });
 
             resetForm();
-            fetchLocations();
+            fetchLocations(); // Refresh data
         } else {
             const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.message || 'Gagal menyimpan');
+            throw new Error(errorData.error || 'Gagal menyimpan'); // Backend error message biasanya field 'error'
         }
     } catch (error) {
         console.error('Error:', error);
@@ -164,7 +174,8 @@ map.on('click', (e) => {
 
 cancelBtn.addEventListener('click', resetForm);
 
-// --- GLOBAL FUNCTIONS ---
+// --- GLOBAL FUNCTIONS (WINDOW) ---
+// Wajib pakai window. agar bisa dipanggil dari string HTML (innerHTML)
 
 window.startEditMode = (id, name, description, lat, lon) => {
     currentEditId = id;
@@ -172,28 +183,34 @@ window.startEditMode = (id, name, description, lat, lon) => {
     descInput.value = description;
     latInput.value = lat;
     lonInput.value = lon;
+    
+    // UI Update
     formTitle.textContent = 'Edit Lokasi';
     submitBtn.textContent = 'Update Perubahan';
     cancelBtn.style.display = 'inline-block';
+    
+    // Scroll ke form agar user sadar
+    form.scrollIntoView({ behavior: 'smooth' });
     nameInput.focus();
 };
 
 window.deleteLocation = async (id) => {
-    // SweetAlert Konfirmasi Hapus
     const result = await Swal.fire({
         title: 'Hapus Lokasi?',
         text: "Data yang dihapus tidak dapat dikembalikan!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#EF4444', // Merah (sesuai tema CSS)
-        cancelButtonColor: '#6B7280', // Abu-abu
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
         confirmButtonText: 'Ya, Hapus!',
         cancelButtonText: 'Batal'
     });
 
     if (result.isConfirmed) {
         try {
+            // URL Delete: .../locations/{id}
             const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            
             if (res.ok) {
                 Swal.fire({
                     icon: 'success',
@@ -204,15 +221,14 @@ window.deleteLocation = async (id) => {
                 });
                 fetchLocations();
             } else {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Gagal hapus');
+                throw new Error('Gagal hapus');
             }
         } catch (error) {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: error.message || 'Gagal menghapus data lokasi.',
+                text: 'Gagal menghapus data lokasi.',
             });
         }
     }
