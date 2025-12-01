@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/locations';
+const API_URL = 'https://uts-be-git-main-gita-utamis-projects.vercel.app/';
 
 // --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
