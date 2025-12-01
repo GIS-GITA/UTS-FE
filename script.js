@@ -2,7 +2,7 @@
 // 1. PERBAIKAN URL (PENTING!)
 // Pastikan tidak ada slash '/' di akhir agar mudah disambung stringnya
 // -----------------------------------------------------------
-const API_URL = 'https://uts-be.vercel.app'; 
+const API_URL = 'https://uts-be.vercel.app/locations';
 
 // --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
