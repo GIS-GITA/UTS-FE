@@ -1,4 +1,4 @@
-const API_URL = 'https://uts-be-git-main-gita-utamis-projects.vercel.app/locations';
+const API_URL = 'https://uts-be.vercel.app/';
 
 // --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
