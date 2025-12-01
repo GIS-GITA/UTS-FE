@@ -1,4 +1,4 @@
-const API_URL = 'https://uts-be-git-main-gita-utamis-projects.vercel.app/';
+const API_URL = 'https://uts-be-git-main-gita-utamis-projects.vercel.app/locations';
 
 // --- DOM ELEMENTS ---
 const form = document.getElementById('locationForm');
@@ -30,6 +30,9 @@ let geoJsonLayer = L.geoJSON().addTo(map);
 const fetchLocations = async () => {
     try {
         const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const featureCollection = await response.json();
         
         // A. Reset Layer Peta
@@ -82,7 +85,7 @@ const fetchLocations = async () => {
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Gagal mengambil data dari server!',
+            text: 'Gagal mengambil data dari server! Pastikan backend berjalan di http://localhost:8080',
         });
     }
 };
@@ -132,7 +135,7 @@ form.addEventListener('submit', async (e) => {
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
-                text: 'Data lokasi berhasil disimpan.',
+                text: currentEditId ? 'Data lokasi berhasil diupdate.' : 'Data lokasi berhasil ditambahkan.',
                 timer: 1500,
                 showConfirmButton: false
             });
@@ -140,13 +143,15 @@ form.addEventListener('submit', async (e) => {
             resetForm();
             fetchLocations();
         } else {
-            throw new Error('Gagal menyimpan');
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Gagal menyimpan');
         }
     } catch (error) {
+        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: 'Terjadi kesalahan saat menyimpan data.',
+            text: error.message || 'Terjadi kesalahan saat menyimpan data.',
         });
     }
 });
@@ -199,13 +204,15 @@ window.deleteLocation = async (id) => {
                 });
                 fetchLocations();
             } else {
-                throw new Error('Gagal hapus');
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Gagal hapus');
             }
         } catch (error) {
+            console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: 'Gagal menghapus data lokasi.',
+                text: error.message || 'Gagal menghapus data lokasi.',
             });
         }
     }
